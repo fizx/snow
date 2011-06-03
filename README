@@ -1,7 +1,7 @@
 Solr is the leading open-source search engine, but it's not great at realtime updates.  Your options used to be:
 
 1. Batch your changes every few tens of seconds.
-2. Patch Solr to use Lucene NRT.
+2. Patch Solr to use Lucene "Near real time" capabilities.
 3. Use Solr with Zoie, a plugin for realtime search developed by LinkedIn.
 
-For There's a patch out there to let Solr use the new "Lucene NRT" technology, but 
+Snow provides a simple (~150 lines of code) plugin for realtime search.  Inspired by Zoie, It's several times faster than Lucene NRT.
