@@ -1,7 +1,8 @@
 import sbt._
 import com.github.olim7t.sbtscalariform._
 
-class SnowProject(info: ProjectInfo) extends DefaultProject(info) with ScalariformPlugin 
+class SnowProject(info: ProjectInfo) extends DefaultProject(info) 
+    with ScalariformPlugin 
   {
   
   val solr = "org.apache.solr" % "solr-core" % "3.1.0"
