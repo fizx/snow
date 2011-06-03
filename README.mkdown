@@ -1,0 +1,22 @@
+Overview
+========
+
+Solr is the leading open-source search engine, but it's not great at realtime updates.  Your options used to be:
+
+1. Batch your changes every few tens of seconds.
+2. Patch Solr to use Lucene NRT "Near real time" capabilities.
+3. Use Solr with Zoie, a plugin for realtime search developed by LinkedIn.
+
+Unfortunately NRT isn't that fast, and Zoie, while fast, is a 10,000LOC project with Solr support as a second-class citizen.
+
+Snow provides a simple, fast drop-in plugin for realtime search in solr.  Inspired by Zoie, it's several times faster than Lucene NRT.  It's a couple hundred lines of straightforward Scala, so you and I have a hope of maintaining it.
+
+How it works
+============
+
+Snow
+
+Building
+========
+
+Snow
