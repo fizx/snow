@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<schema name="example" version="1.3">
+  <types>
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="text" class="solr.TextField" positionIncrementGap="100">
+      <analyzer>
+        <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      </analyzer>
+    </fieldType>
+ </types>
+
+
+ <fields>
+
+   <field name="id" type="string" indexed="true" stored="true" required="true" /> 
+   <field name="text" type="text" indexed="true" stored="true" termVectors="true" termPositions="true" termOffsets="true" />
+ </fields>
+ 
+ <uniqueKey>id</uniqueKey>
+ <defaultSearchField>text</defaultSearchField>
+
+ <!-- SolrQueryParser configuration: defaultOperator="AND|OR" -->
+ <solrQueryParser defaultOperator="OR"/>
+
+
+
+</schema>
