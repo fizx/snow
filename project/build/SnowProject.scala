@@ -5,7 +5,11 @@ class SnowProject(info: ProjectInfo) extends DefaultProject(info)
     with ScalariformPlugin 
   {
   
-  val solr = "org.apache.solr" % "solr-core" % "3.1.0"
+  override val compileOrder = CompileOrder.JavaThenScala
+  
+  val solr = "org.apache.solr" % "solr-core" % "3.2.0"
+  
+  val solrTest = "org.apache.solr" % "solr-test-framework" % "3.2.0" % "test"
     
   val util = "com.twitter" % "util-core" % "1.8.9" % "test"
   val scalaTest = "org.scalatest" % "scalatest" % "1.3" % "test"
