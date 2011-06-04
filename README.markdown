@@ -29,6 +29,6 @@ Snow is compatible with Solr 3.1.
 
 Edit your solrconfig.xml, replacing "solr.DirectUpdateHandler2" with "com.km.snow.solr.RealtimeUpdateHandler".
 
-Finally, add or replace the following chunk of xml in solrconfg.xml. The indexReaderFactory is commented out in the example solrconfig.xml's that ship with Solr.
+Finally, add or replace the following chunk of xml in solrconfg.xml. The indexReaderFactory is commented out in the example `solrconfig.xml` that ships with Solr.
 
      <indexReaderFactory name="IndexReaderFactory" class="com.km.snow.solr.ManagedIndexReaderFactory" />
