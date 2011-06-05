@@ -2,7 +2,7 @@ import sbt._
 import com.github.olim7t.sbtscalariform._
 
 class SnowProject(info: ProjectInfo) extends DefaultProject(info) 
-    with ScalariformPlugin 
+    // with ScalariformPlugin 
   {
   
   override val compileOrder = CompileOrder.JavaThenScala

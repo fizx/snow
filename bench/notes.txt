@@ -1,0 +1,4 @@
+standard solr, entire corpus
+real	4m55.003s
+user	0m3.841s
+sys	0m5.078s

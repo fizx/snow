@@ -11,4 +11,4 @@ project/plugins/project/
 
 # other
 data
-dist
+bench/solr

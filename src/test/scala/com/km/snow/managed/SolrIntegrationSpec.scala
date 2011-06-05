@@ -1,5 +1,6 @@
 package com.km.snow.managed
 
+import com.km.snow.solr._
 import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers
 import org.apache.solr.common.params.CommonParams
@@ -12,6 +13,7 @@ import org.apache.lucene.document._
 import org.apache.lucene.analysis.miscellaneous._
 import org.apache.lucene.analysis._
 import com.twitter.conversions.time._
+import org.apache.solr.search._
 import com.twitter.util._
 import com.km.snow._
 import org.apache.lucene.search._
@@ -32,7 +34,7 @@ class SolrIntegrationSpec extends AbstractSpec {
 
   describe("Solr Integration") {
     it("should show adds immediately") {
-      val updater = h.getCore.getUpdateHandler()
+      val updater = h.getCore.getUpdateHandler().asInstanceOf[RealtimeUpdateHandler]
       val cmd = new AddUpdateCommand()
       cmd.overwriteCommitted = true
       cmd.overwritePending = true
@@ -40,17 +42,24 @@ class SolrIntegrationSpec extends AbstractSpec {
 
       // Add a valid document
       cmd.doc = new Document()
-      cmd.doc.add(new Field("id", "AAA", Store.YES, Index.NOT_ANALYZED))
-      cmd.doc.add(new Field("subject", "xxxxx", Store.YES, Index.NOT_ANALYZED))
+      cmd.doc.add(new Field("id", "AAA", Store.YES, Index.ANALYZED))
+      cmd.doc.add(new Field("text", "xxxxx", Store.YES, Index.ANALYZED))
       updater.addDoc(cmd)
+      updater.writer.lastReader.numDocs should equal(1)
+      
+      val foo = h.getCore.getSearcher(false, true, null).get()
+      
+      val searcher = new IndexSearcher(updater.writer.lastReader)
+      val q = QueryParsing.parseQuery("*:*", h.getCore.getSchema)
+      searcher.search(q, 10).totalHits should equal(1)
 
       val args = new java.util.HashMap[String, String]
-      args.put(CommonParams.Q, "id:AAA")
+      args.put(CommonParams.Q, "*:*")
       val req = new LocalSolrQueryRequest(h.getCore(), new MapSolrParams(args));
 
       val response = h.query(req)
-      val results = h.validateXPath(response, "//*[@numFound='1']")
-      results should equal("//*[@numFound='1']")
+      println(response)
+      response.contains("numFound=\"1") should equal(true)
     }
   }
 }

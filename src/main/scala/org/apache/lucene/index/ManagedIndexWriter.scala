@@ -11,6 +11,7 @@ import org.apache.lucene.util.Version._
 
 class ManagedIndexWriter(dir: Directory, cfg: IndexWriterConfig, pool: ScheduledExecutorService, flushEvery: Long, bufferSize: Int) extends IndexWriter(dir, cfg) {
 
+  var lastReader: CIR = null
   val termInfosIndexDivisor = 128
 
   val flushThread = new Runnable {
@@ -25,6 +26,8 @@ class ManagedIndexWriter(dir: Directory, cfg: IndexWriterConfig, pool: Scheduled
     flushFuture.cancel(true)
     super.close()
   }
+
+  def redoShit() = lastReader.setInternal(nReader())
 
   super.commit()
   def ramCfg = new IndexWriterConfig(LUCENE_31, analyzer)
@@ -86,9 +89,24 @@ class ManagedIndexWriter(dir: Directory, cfg: IndexWriterConfig, pool: Scheduled
     reopenDisk()
   }
 
+  class CIR(ir: IndexReader) extends FilterIndexReader(ir) {
+    def setInternal(i: IndexReader) = this.in = i
+    override def getSequentialSubReaders() = null
+  }
+
+  def reopenReader() = {
+    lastReader.setInternal(nReader)
+  }
+
   override def getReader() = {
+    lastReader = new CIR(nReader())
+    lastReader
+  }
+
+  def nReader() = {
     new MultiReader(ramReader, baseReader) {
       override def directory() = baseReader.directory()
+      override def reopen() = throw new RuntimeException("woot")
     }
   }
 

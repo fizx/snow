@@ -30,4 +30,8 @@ class ManagedIndexReaderFactory extends IndexReaderFactory {
     }
     writer.getReader()
   }
+
+  def close() = {
+    writer.close()
+  }
 }

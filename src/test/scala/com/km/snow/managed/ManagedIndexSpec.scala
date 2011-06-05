@@ -8,10 +8,13 @@ import org.apache.lucene.document._
 import org.apache.lucene.analysis.miscellaneous._
 import org.apache.lucene.analysis._
 import com.twitter.conversions.time._
+import org.apache.lucene.queryParser._
 import com.twitter.util._
+import org.apache.lucene.analysis.standard._
 import com.km.snow._
 import org.apache.lucene.search._
 import org.apache.lucene.index._
+import org.apache.lucene.util.Version._
 
 class ManagedIndexSpec extends AbstractSpec {
   val tmp = new File("/tmp/snow")
@@ -82,9 +85,8 @@ class ManagedIndexSpec extends AbstractSpec {
       it("should be able to quickly delete document in RAM") {
         for (i <- 1 to 10) { addAndRead(i.toString) }
         writer.numDocsInRAM should equal(10)
-        for (i <- 1 to 10) {
-          writer.deleteDocuments(new Term("default", "1"))
-        }
+
+        writer.deleteDocuments(new Term("default", "1"))
         writer.numDocsInRAM should equal(9)
 
         inLessThan(10.millis) {
@@ -97,6 +99,19 @@ class ManagedIndexSpec extends AbstractSpec {
         writer.forceRealtimeToDisk()
         writer.numDocsInRAM should equal(0)
         writer.numDocsOnDisk should equal(1)
+      }
+
+      it("should be searchable") {
+        for (i <- 1 to 10) { addAndRead(i.toString) }
+        writer.numDocsInRAM should equal(10)
+
+        writer.deleteDocuments(new Term("default", "1"))
+        val searcher = new IndexSearcher(writer.getReader)
+        val qp = new QueryParser(LUCENE_31, "default", new StandardAnalyzer(LUCENE_31))
+
+        searcher.search(qp.parse("1"), 100).totalHits should equal(0)
+
+        searcher.search(qp.parse("2"), 100).totalHits should equal(1)
       }
 
       it("should be able to delete document from disk") {
