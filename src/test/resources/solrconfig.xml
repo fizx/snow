@@ -276,7 +276,7 @@
     -->
 
   <!-- The default high-performance update handler -->
-  <updateHandler class="com.km.snow.solr.RealtimeUpdateHandler">
+  <updateHandler class="com.websolr.snow.solr.RealtimeUpdateHandler">
 
     <!-- AutoCommit
 
@@ -364,7 +364,7 @@
        be specified.
     -->
    <indexReaderFactory name="IndexReaderFactory" 
-                       class="com.km.snow.solr.ManagedIndexReaderFactory">
+                       class="com.websolr.snow.solr.ManagedIndexReaderFactory">
      <int name="setTermIndexDivisor">12</int>
    </indexReaderFactory >
     -->

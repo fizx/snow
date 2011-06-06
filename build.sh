@@ -1,5 +1,5 @@
 #!/bin/sh
-cd `dirname $0`
+cd `dirname $0`/bench
 if [ ! -d data ]
 then
   mkdir -p data
@@ -26,6 +26,7 @@ mkdir -p WEB-INF/lib
 cp ./project/boot/scala-2.8.1/lib/scala-library.jar WEB-INF/lib
 cp ./target/scala_2.8.1/snow_2.8.1-0.1.jar WEB-INF/lib
 zip bench/solr/apache-solr-3.2.0-snow/example/webapps/solr.war WEB-INF/lib/*
-rm -rf WEB-INF/lib
+rm -rf WEB-INF
+cp bench/solr/apache-solr-3.2.0-snow/example/webapps/solr.war ./solr-3.2-snow.war
 cd bench
 cp misc/solrconfig.xml solr/apache-solr-3.2.0-snow/example/solr/conf

@@ -1,6 +1,6 @@
-package com.km.snow.managed
+package com.websolr.snow.managed
 
-import com.km.snow.solr._
+import com.websolr.snow.solr._
 import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers
 import org.apache.solr.common.params.CommonParams
@@ -15,7 +15,7 @@ import org.apache.lucene.analysis._
 import com.twitter.conversions.time._
 import org.apache.solr.search._
 import com.twitter.util._
-import com.km.snow._
+import com.websolr.snow._
 import org.apache.lucene.search._
 import org.apache.lucene.index._
 import org.apache.solr.util.TestHarness

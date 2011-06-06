@@ -1,6 +1,6 @@
-package com.km.snow.solr
+package com.websolr.snow.solr
 
-import com.km.snow.managed._
+import com.websolr.snow.managed._
 
 import org.apache.solr.core.IndexReaderFactory
 import org.apache.solr.common.util._

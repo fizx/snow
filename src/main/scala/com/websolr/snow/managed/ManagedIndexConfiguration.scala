@@ -1,4 +1,4 @@
-package com.km.snow.managed
+package com.websolr.snow.managed
 
 trait ManagedIndexConfiguration {
   def bufferSize: Int

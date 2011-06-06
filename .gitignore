@@ -12,3 +12,4 @@ project/plugins/project/
 # other
 data
 bench/solr
+*.war

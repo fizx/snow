@@ -1,4 +1,4 @@
-package com.km.snow.managed
+package com.websolr.snow.managed
 
 import java.io._
 import org.apache.lucene.index._
