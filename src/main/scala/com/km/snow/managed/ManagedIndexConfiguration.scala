@@ -6,6 +6,6 @@ trait ManagedIndexConfiguration {
 }
 
 class DefaultManagedIndexConfiguration extends ManagedIndexConfiguration {
-  def bufferSize = 10000 // docs
+  def bufferSize = 10000000 // docs
   def flushEvery = 10000 // millis
 }

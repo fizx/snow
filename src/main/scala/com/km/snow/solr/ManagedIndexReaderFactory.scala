@@ -26,7 +26,7 @@ class ManagedIndexReaderFactory extends IndexReaderFactory {
 
   override def newReader(dir: Directory, readOnly: Boolean) = {
     if (writer == null) {
-      writer = new ManagedIndexWriter(dir, cfg, ManagedIndexReaderFactory.pool, 10000, 10000)
+      writer = new ManagedIndexWriter(dir, cfg, ManagedIndexReaderFactory.pool, 10000, 1000000)
     }
     writer.getReader()
   }

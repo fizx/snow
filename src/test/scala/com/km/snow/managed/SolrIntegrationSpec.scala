@@ -47,7 +47,7 @@ class SolrIntegrationSpec extends AbstractSpec {
       updater.addDoc(cmd)
       updater.writer.lastReader.numDocs should equal(1)
       
-      val foo = h.getCore.getSearcher(false, true, null).get()
+      val foo = h.getCore.getSearcher(false, true, null).get()) 
       
       val searcher = new IndexSearcher(updater.writer.lastReader)
       val q = QueryParsing.parseQuery("*:*", h.getCore.getSchema)

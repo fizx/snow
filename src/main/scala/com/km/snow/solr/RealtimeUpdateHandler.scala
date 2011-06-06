@@ -43,6 +43,7 @@ class RealtimeUpdateHandler(core: SolrCore) extends UpdateHandler(core) {
       writer.optimize(cmd.maxOptimizeSegments)
       writer.reopenReader()
     }
+    writer.reopenReader()
   }
 
   def mergeIndexes(cmd: MergeIndexesCommand) = {
@@ -64,7 +65,6 @@ class RealtimeUpdateHandler(core: SolrCore) extends UpdateHandler(core) {
     } else {
       writer.deleteDocuments(q)
     }
-    writer.reopenReader()
     deleteByQueryCommandsCumulative.incrementAndGet()
   }
 
@@ -73,7 +73,6 @@ class RealtimeUpdateHandler(core: SolrCore) extends UpdateHandler(core) {
   def delete(cmd: DeleteUpdateCommand) = {
     deleteByIdCommandsCumulative.incrementAndGet()
     writer.deleteDocuments(idTerm.createTerm(idFieldType.toInternal(cmd.id)))
-    writer.reopenReader()
   }
 
   def addDoc(cmd: AddUpdateCommand) = {
@@ -113,7 +112,6 @@ class RealtimeUpdateHandler(core: SolrCore) extends UpdateHandler(core) {
         addCommandsCumulative.incrementAndGet();
       }
     }
-    writer.reopenReader()
     rc
   }
 
