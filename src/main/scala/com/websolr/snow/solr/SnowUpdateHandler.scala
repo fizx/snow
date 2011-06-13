@@ -19,7 +19,11 @@ import org.apache.lucene.util.Version._
 import org.apache.lucene.analysis.standard._
 import org.apache.lucene.index.IndexWriterConfig.OpenMode._
 
-class RealtimeUpdateHandler(core: SolrCore) extends UpdateHandler(core) {
+object RealtimeUpdateHandler {
+  val pool = Executors.newScheduledThreadPool(8)
+}
+
+class SnowUpdateHandler(core: SolrCore) extends UpdateHandler(core) {
 
   val addCommandsCumulative = new AtomicLong()
   val deleteByIdCommandsCumulative = new AtomicLong()
@@ -28,10 +32,29 @@ class RealtimeUpdateHandler(core: SolrCore) extends UpdateHandler(core) {
   val optimizeCommands = new AtomicLong()
   val numErrorsCumulative = new AtomicLong()
 
-  val irf = core.getIndexReaderFactory().asInstanceOf[ManagedIndexReaderFactory]
+  val irf = core.getIndexReaderFactory().asInstanceOf[SnowIndexReaderFactory]
   val writer = irf.writer
-
+  var added = new AtomicLong()
+  var deleted = new AtomicLong()
+  
+  val docsUpperBound = core.getSolrConfig().getUpdateHandlerInfo().autoCommmitMaxDocs
+  val timeUpperBound: Long = core.getSolrConfig().getUpdateHandlerInfo().autoCommmitMaxTime
+  val commit = new Object()
+  
+  val flushThread = new Runnable {
+    def run = {
+      if(added.get() > 0 || deleted.get() > 0)
+      doCommit()
+      added.set(0)
+      deleted.set(0)
+    }
+  }
+  var flushFuture = RealtimeUpdateHandler.pool.scheduleWithFixedDelay(flushThread, 
+      timeUpperBound, timeUpperBound, TimeUnit.MILLISECONDS)
+  
   def close() = {
+    flushFuture.cancel(true)
+    flushFuture = null
     irf.close()
   }
 
@@ -39,11 +62,9 @@ class RealtimeUpdateHandler(core: SolrCore) extends UpdateHandler(core) {
 
   def commit(cmd: CommitUpdateCommand) = {
     if (cmd.optimize) {
-      optimizeCommands.incrementAndGet
-      writer.optimize(cmd.maxOptimizeSegments)
-      writer.reopenReader()
+      doOptimize(cmd)
     }
-    writer.reopenReader()
+    writer.getReader()
   }
 
   def mergeIndexes(cmd: MergeIndexesCommand) = {
@@ -52,7 +73,7 @@ class RealtimeUpdateHandler(core: SolrCore) extends UpdateHandler(core) {
       mergeIndexesCommands.incrementAndGet
       writer.addIndexes(dirs: _*)
     }
-    writer.reopenReader()
+    writer.getReader()
     1
   }
 
@@ -65,14 +86,19 @@ class RealtimeUpdateHandler(core: SolrCore) extends UpdateHandler(core) {
     } else {
       writer.deleteDocuments(q)
     }
+    deleted.incrementAndGet()
     deleteByQueryCommandsCumulative.incrementAndGet()
   }
 
-  def deleteAll() = writer.deleteAll()
+  def deleteAll() = {
+    writer.deleteAll()
+    doCommit()
+  }
 
   def delete(cmd: DeleteUpdateCommand) = {
     deleteByIdCommandsCumulative.incrementAndGet()
     writer.deleteDocuments(idTerm.createTerm(idFieldType.toInternal(cmd.id)))
+    deleted.incrementAndGet()
   }
 
   def addDoc(cmd: AddUpdateCommand) = {
@@ -104,6 +130,12 @@ class RealtimeUpdateHandler(core: SolrCore) extends UpdateHandler(core) {
       } else {
         writer.addDocument(cmd.getLuceneDocument(schema))
       }
+      
+      if (cmd.commitWithin > -1) writer.getReader()
+      
+      if (added.incrementAndGet > docsUpperBound) {
+        doCommit()
+      }
       rc = 1
     } finally {
       if (rc != 1) {
@@ -113,6 +145,16 @@ class RealtimeUpdateHandler(core: SolrCore) extends UpdateHandler(core) {
       }
     }
     rc
+  }
+  
+  def doCommit() = commit.synchronized {
+    added.set(0)
+    writer.commit()
+  }
+  
+  def doOptimize(cmd: CommitUpdateCommand) = commit.synchronized {
+    optimizeCommands.incrementAndGet
+    writer.optimize(cmd.maxOptimizeSegments)
   }
 
   def getStatistics() = {

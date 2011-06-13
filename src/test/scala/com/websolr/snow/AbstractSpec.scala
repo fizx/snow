@@ -1,4 +1,4 @@
-package com.websolr.snow
+ package com.websolr.snow
 
 import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers

@@ -22,8 +22,8 @@ import org.apache.solr.util.TestHarness
 
 class SolrIntegrationSpec extends AbstractSpec {
 
-  val solrConfigFile = new File("src/test/resources/solrconfig.xml")
-  val schemaFile = new File("src/test/resources/schema.xml")
+  val solrConfigFile = new File("snow/src/test/resources/solrconfig.xml")
+  val schemaFile = new File("snow/src/test/resources/schema.xml")
   val dataDir = new File("/tmp/test-index")
   FileUtils.deleteDirectory(dataDir)
 
@@ -34,7 +34,7 @@ class SolrIntegrationSpec extends AbstractSpec {
 
   describe("Solr Integration") {
     it("should show adds immediately") {
-      val updater = h.getCore.getUpdateHandler().asInstanceOf[RealtimeUpdateHandler]
+      val updater = h.getCore.getUpdateHandler().asInstanceOf[SnowUpdateHandler]
       val cmd = new AddUpdateCommand()
       cmd.overwriteCommitted = true
       cmd.overwritePending = true
@@ -51,7 +51,7 @@ class SolrIntegrationSpec extends AbstractSpec {
       
       val foo = h.getCore.getSearcher(false, true, null).get()
       
-      val searcher = new IndexSearcher(updater.writer.holder)
+      val searcher = new IndexSearcher(updater.writer.getReader)
       val q = QueryParsing.parseQuery("*:*", h.getCore.getSchema)
       searcher.search(q, 10).totalHits should equal(1)
 

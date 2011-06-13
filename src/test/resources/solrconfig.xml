@@ -276,7 +276,7 @@
     -->
 
   <!-- The default high-performance update handler -->
-  <updateHandler class="com.websolr.snow.solr.RealtimeUpdateHandler">
+  <updateHandler class="com.websolr.snow.solr.SnowUpdateHandler">
 
     <!-- AutoCommit
 
@@ -293,12 +293,10 @@
                    since a document was added before automaticly
                    triggering a new commit. 
       -->
-    <!--
-       <autoCommit> 
-         <maxDocs>10000</maxDocs>
-         <maxTime>1000</maxTime> 
-       </autoCommit>
-      -->
+     <autoCommit> 
+       <maxDocs>10000</maxDocs>
+       <maxTime>60000</maxTime> 
+     </autoCommit>
 
     <!-- Update Related Event Listeners
          
@@ -364,9 +362,7 @@
        be specified.
     -->
    <indexReaderFactory name="IndexReaderFactory" 
-                       class="com.websolr.snow.solr.ManagedIndexReaderFactory">
-     <int name="setTermIndexDivisor">12</int>
-   </indexReaderFactory >
+                       class="com.websolr.snow.solr.SnowIndexReaderFactory" />
     -->
 
 

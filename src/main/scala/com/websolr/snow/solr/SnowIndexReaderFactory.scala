@@ -14,19 +14,17 @@ import org.apache.lucene.util.Version._
 import org.apache.lucene.analysis.standard._
 import org.apache.lucene.index.IndexWriterConfig.OpenMode._
 
-object ManagedIndexReaderFactory {
-  var pool = Executors.newScheduledThreadPool(10)
-}
-
-class ManagedIndexReaderFactory extends IndexReaderFactory {
-
+class SnowIndexReaderFactory extends IndexReaderFactory {
   val analyzer = new StandardAnalyzer(LUCENE_31)
   val cfg = new IndexWriterConfig(LUCENE_31, analyzer)
-  var writer: ManagedIndexWriter = null
+  val policy = new BalancedSegmentMergePolicy()
+  policy.setMergeFactor(3)
+  cfg.setMergePolicy(policy)
+  var writer: NRTIndexWriter = null
 
   override def newReader(dir: Directory, readOnly: Boolean) = {
     if (writer == null) {
-      writer = new ManagedIndexWriter(dir, cfg, ManagedIndexReaderFactory.pool, 10000000, 10000)
+      writer = new NRTIndexWriter(dir, cfg)
     }
     writer.getReader()
   }
