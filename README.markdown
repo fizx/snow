@@ -3,7 +3,7 @@ Pre-release code, still under active development
 Overview
 ========
 
-Snow provides a simple, fast, drop-in plugin for realtime search in Solr.  Inspired by Zoie, it's much times faster than Lucene NRT.  It's a couple hundred lines of straightforward Scala, so you and I have a hope of maintaining it (or porting it to Java, if that's your thing).
+Snow provides a simple, fast, tiny drop-in plugin for realtime search in Solr.  
 
 Why?
 ====
@@ -11,79 +11,34 @@ Why?
 Solr is the leading open-source search engine, but it's not great at realtime updates.  Your options used to be:
 
 1. Batch your changes every few (possibly tens of) seconds.
-2. Patch Solr to use Lucene NRT "Near real time" capabilities.  In my benchmarks, NRT rarely helps
+2. Patch Solr to use Lucene NRT "Near real time" capabilities.  
 3. Use Solr with Zoie, a plugin for realtime search developed by LinkedIn.
 4. Use Solandra, Solr backed by Cassandra.
 
-Unfortunately NRT isn't that fast, and Zoie, while fast, is a 10,000LOC project with Solr support as a second-class citizen.  I'm skeptical of Solandra, because Cassandra's read performance is still slower than other general purpose databases, and the data structures it uses are less efficient for this use case than the Lucene index structure.
+Unfortunately NRT isn't that fast, and Zoie, while fast, is a 10,000LOC project with Solr support as a second-class citizen.  Solandra was 10-40x slower than solr in benchmarks, probably because Cassandra's read performance is still slower than other general purpose databases, and the data structures it uses are less efficient for this use case than the Lucene index structure.
 
 How it works
 ============
 
-Snow sends new documents to an extra index in RAM. Snow flushes the RAM index to the primary on-disk index whenever the buffer gets large, or a configurable amount of time has elapsed.  Reads, updates, and deletes are transparently routed to both indexes.
-
-It might be somewhat useful to show a state machine:
-
-                          RAM                   DISK
-                   reader     writer      reader     writer
-    Index(A)  =>                A
-    Commit()  =>      A         A            
-    Flush()   =>      A         A            A         A
-    Delete(A) =>                A            ()        A
-    Commit()  =>                             ()        A
-
-How commit works
-----------------
-
-    
-How flush works
----------------
-
-buffer(deletes)
-
-Write(a, A*)
-Read(a, A)
-
-
-Create a'
-Write +a'
-Read(a, a', A)
-<!-- thread {
-    CloseWrites(a)
-    applyDeletes(A)
-    merge(a, A)
-    A' = commit(A)
-    Write(a', A'*)
-    Read(a', A')
-    applyDeletes(A'*)
-} -->
-
-
+Snow uses NRT, but bundles in a slightly modified version of Lucene's contrib/NRTCachingDirectory.  Effectively, this creates a small RAM disk for the most rapidly changing parts of your index.
 
 Building and installing
 =======================
 
-We aren't distributing binaries yet, but Snow is easy to build from source.  Snow is compatible with Solr 3.2.  For a complete build (also downloads Solr, sets up a benchmarking environment, etc), which will drop solr-3.2-snow.war into ./target, you can run:
+We aren't distributing binaries yet, but Snow is easy to build from source.  Snow is compatible with Solr 3.2.  To build, you can run:
 
      # depends on unix, wget, java
-    :$ ./build-everything.sh 
-    
-If you know your Java, and are interested in a lighter build process, 
-
-    :$ ./sbt update test    # unit tests
-    :$ ./sbt update package # Look in target/scala_2.8.1 for the jar.
-                            # Don't forget to grab the scala 2.8.1 library jar too.
-                            # Put both in your CLASSPATH
+    :$ ./build-war.sh 
 
 Configuration
 =============
 
-There is an example configuration in ./bench/misc/solrconfig.xml.  If you'd prefer to use your existing  configuration, you need to make the following changes to your solrconfig.xml.
+There is an example configuration in ./bench/misc/solrconfig-nrt.xml.  If you'd prefer to use your existing configuration, you need to make the following changes to your solrconfig.xml.
 
-1. Replace "solr.DirectUpdateHandler2" with "com.websolr.snow.solr.RealtimeUpdateHandler"
+1. Replace "solr.DirectUpdateHandler2" with "com.websolr.snow.solr.SnowUpdateHandler"
 2. Add or replace the following chunk of xml in solrconfg.xml. The indexReaderFactory is commented out in the example `solrconfig.xml` that ships with Solr.
 
-        <indexReaderFactory name="IndexReaderFactory" class="com.websolr.snow.solr.ManagedIndexReaderFactory" />
+        <indexReaderFactory name="IndexReaderFactory" class="com.websolr.snow.solr.SnowIndexReaderFactory" />
     
 3. Disable all Solr caches.  You can grep for FastLRUCache, and comment out the xml tags that contain it.
 
