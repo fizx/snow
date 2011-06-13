@@ -16,7 +16,7 @@ then
   cd solr
   wget -O solr.tgz http://mirrors.kahuki.com/apache//lucene/solr/3.2.0/apache-solr-3.2.0.tgz
   tar -xzf solr.tgz
-  cp -R apache-solr-3.2.0 apache-solr-3.2.0-snow
+  cp -R apache-solr-3.2.0 apache-solr-3.2.0-nrt
   rm solr.tgz
   cd -
 fi
@@ -25,9 +25,7 @@ cd ..
 mkdir -p WEB-INF/lib
 cp ./project/boot/scala-2.8.1/lib/scala-library.jar WEB-INF/lib
 cp ./target/scala_2.8.1/snow_2.8.1-0.1.jar WEB-INF/lib
-zip bench/solr/apache-solr-3.2.0-snow/example/webapps/solr.war WEB-INF/lib/*
+zip bench/solr/apache-solr-3.2.0-nrt/example/webapps/solr.war WEB-INF/lib/*
 rm -rf WEB-INF
-mkdir -p target
-cp bench/solr/apache-solr-3.2.0-snow/example/webapps/solr.war ./target/solr-3.2-snow.war
 cd bench
-cp misc/solrconfig.xml solr/apache-solr-3.2.0-snow/example/solr/conf
+cp misc/solrconfig-nrt.xml solr/apache-solr-3.2.0-nrt/example/solr/conf
