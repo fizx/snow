@@ -1,4 +1,53 @@
-standard solr, entire corpus
-real	4m55.003s
-user	0m3.841s
-sys	0m5.078s
+Microdocument
+
+results/batch-nrt:
+Mean:   383.75
+Median: 330.0
+Stddev: 246.82036059458386
+results/batch-solr:
+Mean:   400.73
+Median: 317.5
+Stddev: 308.42240662619
+results/query-nrt:
+Mean:   1.416
+Median: 1.0
+Stddev: 3.3173715359928586
+results/query-solr:
+Mean:   1.124
+Median: 1.0
+Stddev: 2.100821482611892
+results/single-nrt:
+Mean:   8.764
+Median: 2.0
+Stddev: 12.2345407755252
+results/single-solr:
+Mean:   43.134
+Median: 31.0
+Stddev: 36.36309005459134
+
+Normal document
+
+results/batch-nrt-articles:
+Mean:   612.74
+Median: 719.0
+Stddev: 436.7485377794931
+results/batch-solr-articles:
+Mean:   899.51
+Median: 902.0
+Stddev: 864.4149711355259
+results/query-nrt-articles:
+Mean:   0.886
+Median: 1.0
+Stddev: 0.8308939580590743
+results/query-solr-articles:
+Mean:   1.238
+Median: 1.0
+Stddev: 1.6366775573868257
+results/single-nrt-articles:
+Mean:   4.35
+Median: 3.0
+Stddev: 5.008151250448455
+results/single-solr-articles:
+Mean:   109.9
+Median: 65.0
+Stddev: 125.06836025487063
