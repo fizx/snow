@@ -22,8 +22,8 @@ import org.apache.solr.util.TestHarness
 
 class SolrIntegrationSpec extends AbstractSpec {
 
-  val solrConfigFile = new File("snow/src/test/resources/solrconfig.xml")
-  val schemaFile = new File("snow/src/test/resources/schema.xml")
+  val solrConfigFile = new File("src/test/resources/solrconfig.xml")
+  val schemaFile = new File("src/test/resources/schema.xml")
   val dataDir = new File("/tmp/test-index")
   FileUtils.deleteDirectory(dataDir)
 

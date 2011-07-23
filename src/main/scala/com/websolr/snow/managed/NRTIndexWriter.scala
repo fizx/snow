@@ -18,13 +18,13 @@ object NRTIndexWriter {
 
 class NRTIndexWriter(dir: Directory, cfg: IndexWriterConfig) 
                      extends IndexWriter(
-                       new NRTCachingDirectory2(
+                       new NRTCachingDirectory(
                        dir,
                        NRTIndexWriter.maxMergeSizeMB,
                        NRTIndexWriter.maxCachedMB)
                      , cfg) {
 
-  val nrtDir = getDirectory.asInstanceOf[NRTCachingDirectory2]
+  val nrtDir = getDirectory.asInstanceOf[NRTCachingDirectory]
   setMergeScheduler(nrtDir.getMergeScheduler)
 
   val holder = new RefreshableIndexHolder(super.getReader)

@@ -68,10 +68,10 @@ class SnowUpdateHandler(core: SolrCore) extends UpdateHandler(core) {
   }
 
   def mergeIndexes(cmd: MergeIndexesCommand) = {
-    val dirs = cmd.dirs
-    if (dirs != null && dirs.length > 0) {
+    val readers = cmd.readers
+    if (readers != null && readers.length > 0) {
       mergeIndexesCommands.incrementAndGet
-      writer.addIndexes(dirs: _*)
+      writer.addIndexes(readers: _*)
     }
     writer.getReader()
     1
