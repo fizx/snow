@@ -51,12 +51,19 @@ class SolrIntegrationSpec extends AbstractSpec {
       
       val foo = h.getCore.getSearcher(false, true, null).get()
       
-      val searcher = new IndexSearcher(updater.writer.getReader)
-      val q = QueryParsing.parseQuery("*:*", h.getCore.getSchema)
-      searcher.search(q, 10).totalHits should equal(1)
+      println("hi")
+      println("OMG: " + foo.getReader.numDocs())
+      
+      // val reader = updater.writer.getReader
+      // val searcher = new SolrIndexSearcher(h.getCore, h.getCore.getSchema)
+      val q = QueryParsing.parseQuery("text:xxxxx", h.getCore.getSchema)
+      foo.search(q, 10).totalHits should equal(1)
 
+      println("phase 2")
+      
       val args = new java.util.HashMap[String, String]
-      args.put(CommonParams.Q, "*:*")
+      args.put(CommonParams.Q, "text:xxxxx")
+      args.put(CommonParams.DEBUG_QUERY, "true")
       val req = new LocalSolrQueryRequest(h.getCore(), new MapSolrParams(args));
 
       val response = h.query(req)

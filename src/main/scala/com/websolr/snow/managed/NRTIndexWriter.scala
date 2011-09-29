@@ -16,13 +16,19 @@ object NRTIndexWriter {
   val maxCachedMB = 60
 }
 
-class NRTIndexWriter(dir: Directory, cfg: IndexWriterConfig) 
+class NRTIndexWriter(dir: Directory) 
                      extends IndexWriter(
                        new NRTCachingDirectory(
                        dir,
                        NRTIndexWriter.maxMergeSizeMB,
                        NRTIndexWriter.maxCachedMB)
-                     , cfg) {
+                     , new StandardAnalyzer()) {
+                       
+                       // val analyzer = new StandardAnalyzer(LUCENE_31)
+                       // val cfg = new IndexWriterConfig(LUCENE_31, analyzer)
+                       // val policy = new BalancedSegmentMergePolicy()
+                       // policy.setMergeFactor(3)
+                       // cfg.setMergePolicy(policy)
 
   val nrtDir = getDirectory.asInstanceOf[NRTCachingDirectory]
   setMergeScheduler(nrtDir.getMergeScheduler)
@@ -31,6 +37,7 @@ class NRTIndexWriter(dir: Directory, cfg: IndexWriterConfig)
 
   override def getReader() = {
     holder.setInternal(super.getReader())
+    println(holder.numDocs)
     holder
   }
 }

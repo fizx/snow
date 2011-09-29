@@ -17,7 +17,6 @@ import java.util.concurrent._
 import java.util.concurrent.atomic._
 import org.apache.lucene.util.Version._
 import org.apache.lucene.analysis.standard._
-import org.apache.lucene.index.IndexWriterConfig.OpenMode._
 
 object RealtimeUpdateHandler {
   val pool = Executors.newScheduledThreadPool(8)
@@ -68,10 +67,10 @@ class SnowUpdateHandler(core: SolrCore) extends UpdateHandler(core) {
   }
 
   def mergeIndexes(cmd: MergeIndexesCommand) = {
-    val readers = cmd.readers
-    if (readers != null && readers.length > 0) {
+    val dirs = cmd.dirs
+    if (dirs != null && dirs.length > 0) {
       mergeIndexesCommands.incrementAndGet
-      writer.addIndexes(readers: _*)
+      writer.addIndexes(dirs)
     }
     writer.getReader()
     1
