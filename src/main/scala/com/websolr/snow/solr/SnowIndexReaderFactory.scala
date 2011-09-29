@@ -20,13 +20,22 @@ class SnowIndexReaderFactory extends IndexReaderFactory {
   val policy = new BalancedSegmentMergePolicy()
   policy.setMergeFactor(3)
   cfg.setMergePolicy(policy)
-  var writer: NRTIndexWriter = null
+  private var _writer: NRTIndexWriter = null
+  private var _dir: Directory = null
+  
+  lazy val writer = {
+    if (_dir == null) throw new RuntimeException("WTF")
+    if (_writer == null) _writer = new NRTIndexWriter(_dir, cfg)
+    _writer
+  }
 
   override def newReader(dir: Directory, readOnly: Boolean) = {
+    _dir = dir
     if (writer == null) {
-      writer = new NRTIndexWriter(dir, cfg)
+      IndexReader.open(dir, readOnly)
+    } else {
+      writer.getReader()
     }
-    writer.getReader()
   }
 
   def close() = {

@@ -33,7 +33,7 @@ class SnowUpdateHandler(core: SolrCore) extends UpdateHandler(core) {
   val numErrorsCumulative = new AtomicLong()
 
   val irf = core.getIndexReaderFactory().asInstanceOf[SnowIndexReaderFactory]
-  val writer = irf.writer
+  lazy val writer = irf.writer
   var added = new AtomicLong()
   var deleted = new AtomicLong()
   
