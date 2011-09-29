@@ -25,6 +25,7 @@ class SnowIndexReaderFactory extends IndexReaderFactory {
   
   lazy val writer = {
     if (_dir == null) throw new RuntimeException("WTF")
+    IndexWriter.unlock(_dir)
     if (_writer == null) _writer = new NRTIndexWriter(_dir, cfg)
     _writer
   }
