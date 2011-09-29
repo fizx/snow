@@ -32,7 +32,7 @@ class SnowIndexReaderFactory extends IndexReaderFactory {
 
   override def newReader(dir: Directory, readOnly: Boolean) = {
     _dir = dir
-    if (writer == null) {
+    if (_writer == null) {
       IndexReader.open(dir, readOnly)
     } else {
       writer.getReader()
