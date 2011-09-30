@@ -22,18 +22,20 @@ class SnowIndexReaderFactory extends IndexReaderFactory {
   cfg.setMergePolicy(policy)
   private var _writer: NRTIndexWriter = null
   private var _dir: Directory = null
-  
+  private var _holder: RefreshableIndexHolder = null
+
   lazy val writer = {
-    if (_dir == null) throw new RuntimeException("WTF")
+    if (_dir == null || _holder == null) throw new RuntimeException("WTF")
     IndexWriter.unlock(_dir)
-    if (_writer == null) _writer = new NRTIndexWriter(_dir, cfg)
+    if (_writer == null) _writer = new NRTIndexWriter(_dir, cfg, _holder)
     _writer
   }
 
   override def newReader(dir: Directory, readOnly: Boolean) = {
     _dir = dir
     if (_writer == null) {
-      IndexReader.open(dir, readOnly)
+      _holder = new RefreshableIndexHolder(IndexReader.open(dir, readOnly))
+      _holder
     } else {
       writer.getReader()
     }

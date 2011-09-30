@@ -16,7 +16,7 @@ object NRTIndexWriter {
   val maxCachedMB = 60
 }
 
-class NRTIndexWriter(dir: Directory, cfg: IndexWriterConfig) 
+class NRTIndexWriter(dir: Directory, cfg: IndexWriterConfig, holder: RefreshableIndexHolder)
                      extends IndexWriter(
                        new NRTCachingDirectory(
                        dir,
@@ -26,8 +26,6 @@ class NRTIndexWriter(dir: Directory, cfg: IndexWriterConfig)
 
   val nrtDir = getDirectory.asInstanceOf[NRTCachingDirectory]
   setMergeScheduler(nrtDir.getMergeScheduler)
-
-  val holder = new RefreshableIndexHolder(super.getReader)
 
   override def getReader() = {
     holder.setInternal(super.getReader())
