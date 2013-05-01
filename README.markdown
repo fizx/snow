@@ -1,4 +1,7 @@
-Pre-release code, still under active development
+Abandoned/deprecated
+========
+
+Solr4 includes this functionality.
 
 Overview
 ========
